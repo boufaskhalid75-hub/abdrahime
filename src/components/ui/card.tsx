@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 export function Card({ className, ...props }: React.ComponentProps<"div">) {
-  return <div className={cn("rounded-[var(--radius-card)] border border-line bg-surface shadow-[0_1px_2px_rgba(16,24,40,0.04)]", className)} {...props} />;
+  return <div className={cn("min-w-0 rounded-[var(--radius-card)] border border-line bg-surface shadow-[0_1px_2px_rgba(16,24,40,0.04)]", className)} {...props} />;
 }
 export function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   return <div className={cn("flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4", className)} {...props} />;

@@ -2,8 +2,12 @@ import { z } from "zod";
 
 /** Validation messages are dictionary keys of `t.validation`. */
 const text = (max: number) => z.string().trim().max(max, "tooLong");
+/** Optional text: "", null or undefined all become null. Idempotent, because the client sends
+ *  already-parsed values that the server action validates again with the same schema. */
 const optText = (max: number) =>
-  z.string().trim().max(max, "tooLong").optional().or(z.literal("")).transform((v) => (v ? v : null));
+  z.union([z.string().trim().max(max, "tooLong"), z.null(), z.undefined()]).transform((v) => (v ? v : null));
+const optEmail = (max: number) =>
+  z.union([z.literal(""), z.string().trim().email("email").max(max, "tooLong"), z.null(), z.undefined()]).transform((v) => (v ? v : null));
 const num = z.coerce.number({ message: "required" });
 export const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "required");
 const method = z.enum(["cash", "bank_transfer", "other"]);
@@ -24,7 +28,7 @@ export const supplierSchema = z.object({
   contact_name: optText(120),
   phone: optText(40),
   address: optText(300),
-  email: z.string().trim().email("email").max(160).optional().or(z.literal("")).transform((v) => (v ? v : null)),
+  email: optEmail(160),
   notes: optText(1000),
 });
 export type SupplierInput = z.input<typeof supplierSchema>;
@@ -105,7 +109,7 @@ export const adjustmentSchema = z.object({
   quantity_kg: num.gt(0, "positive"),
   movement_date: isoDate,
   notes: text(500).min(1, "required"),
-  unit_cost: z.union([num.min(0, "nonNegative"), z.literal("")]).optional().transform((v) => (v === "" || v === undefined ? null : v)),
+  unit_cost: z.union([z.literal(""), z.null(), z.undefined(), num.min(0, "nonNegative")]).transform((v) => (v === "" || v === undefined || v === null ? null : v)),
 });
 export type AdjustmentInput = z.input<typeof adjustmentSchema>;
 
@@ -115,12 +119,12 @@ export const settingsSchema = z.object({
   address: optText(300),
   city: optText(80),
   phone: optText(40),
-  email: z.string().trim().email("email").optional().or(z.literal("")).transform((v) => (v ? v : null)),
+  email: optEmail(160),
   ice: optText(40),
   rc: optText(40),
   if_number: optText(40),
   patente: optText(40),
-  logo_url: z.string().trim().url("required").max(500).optional().or(z.literal("")).transform((v) => (v ? v : null)),
+  logo_url: z.union([z.literal(""), z.string().trim().url("required").max(500), z.null(), z.undefined()]).transform((v) => (v ? v : null)),
   invoice_footer: optText(500),
   invoice_prefix: prefix,
   order_prefix: prefix,
