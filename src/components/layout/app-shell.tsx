@@ -2,7 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { Languages, LogOut, Menu, X } from "lucide-react";
 import { useI18n } from "@/lib/i18n/client";
 import { navigation } from "./nav";
@@ -15,8 +15,6 @@ export function AppShell({ children, userEmail, businessName }: { children: Reac
   const [open, setOpen] = useState(false);
   const [pending, start] = useTransition();
   const groups = navigation(t);
-
-  useEffect(() => setOpen(false), [pathname]);
 
   const sidebar = (
     <div className="flex h-full flex-col bg-navy text-white">
@@ -39,6 +37,7 @@ export function AppShell({ children, userEmail, businessName }: { children: Reac
                   <li key={it.href}>
                     <Link
                       href={it.href}
+                      onClick={() => setOpen(false)}
                       aria-current={active ? "page" : undefined}
                       className={cn(
                         "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
