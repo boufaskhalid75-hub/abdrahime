@@ -171,13 +171,17 @@ describe.skipIf(!enabled)("LIVE UI on the real backend", () => {
       ["/api/export/backup", "spreadsheetml"],
     ];
     for (const [url, type] of checks) {
-      const r = await ctx.request.get(`${BASE}${url}`);
-      expect(r.status(), url).toBe(200);
-      expect(r.headers()["content-type"], url).toContain(type);
-      const body = await r.body();
-      expect(body.length, url).toBeGreaterThan(1000);
-      if (type === "application/pdf") expect(body.subarray(0, 5).toString(), url).toBe("%PDF-");
-      else expect(body.subarray(0, 2).toString(), url).toBe("PK");
+      // Download from inside the signed-in page (same cookies and network path as the user).
+      const r = await page.evaluate(async (u: string) => {
+        const res = await fetch(u);
+        const b = new Uint8Array(await res.arrayBuffer());
+        return { status: res.status, type: res.headers.get("content-type") ?? "", len: b.length, head: String.fromCharCode(...b.slice(0, 5)) };
+      }, `${BASE}${url}`);
+      expect(r.status, url).toBe(200);
+      expect(r.type, url).toContain(type);
+      expect(r.len, url).toBeGreaterThan(1000);
+      if (type === "application/pdf") expect(r.head, url).toBe("%PDF-");
+      else expect(r.head.slice(0, 2), url).toBe("PK");
     }
   }, 300_000);
 

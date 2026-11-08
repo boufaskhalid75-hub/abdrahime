@@ -12,8 +12,9 @@ _Last update: 2026-11-08 (live backend connected)_
 | Migrations applied | 0001 schema, 0002 engine, 0003 reports, 0004 security, 0005 hardening |
 | Schema parity | Remote fingerprint equals a fresh local build of the repository migrations (tables, columns, constraints, indexes, triggers, functions, policies, grants) |
 | Advisors | Security: only "authenticated can execute SECURITY DEFINER" (intentional RPC design). Performance: unused-index INFO only (empty DB) |
-| Vercel | Team boufaskhalid75-hub's projects — project not created yet: Vercel GitHub integration must be installed first |
-| QA accounts | `qa-a@volaille-manager.invalid`, `qa-b@volaille-manager.invalid` (integration testing only; to be banned after deployment checks) |
+| Vercel | Project **volaille-manager** (team boufaskhalid75-hub's projects), linked to GitHub, production branch `claude/eager-feynman-mg44e0`, Node 22, functions in `cdg1` (Paris) |
+| Production URL | **https://volaille-manager.vercel.app** |
+| QA accounts | `qa-a@volaille-manager.invalid`, `qa-b@volaille-manager.invalid` — used for integration testing, now **banned** (cannot sign in). Their isolated test records remain; invisible to any other account |
 
 
 ## Phase 0 — Initial audit
@@ -72,7 +73,7 @@ _Last update: 2026-11-08 (live backend connected)_
 | Unit — finance, rounding, payments, valuation, i18n, errors, dates, formatting, PDF rendering | `npm run test:unit` | **30 / 30 passed** |
 | Database — products, purchases, inventory, CUMP, FIFO, sales, deliveries, invoices, payments, finance, RLS & privileges | `npm run test:db` | **37 / 37 passed** |
 | **Live API** — real Supabase via supabase-js: workflow, negative stock, exactly-once deduction, partial payment refused, multi-invoice payment, balances, CUMP cost, cash/bank, closing, RLS (anon + second account) | `npm run test:live` | **9 / 9 passed** |
-| **Live UI** — real app on real Supabase: login, 32 page loads (16 nav + closing + forms + 9 report tabs), full workflow through the forms, 6 PDF/Excel exports, FR/AR desktop + mobile, zero browser errors | `npm run test:live` | **5 / 5 passed** |
+| **Live UI on production** (https://volaille-manager.vercel.app) — real app on real Supabase: login, 32 page loads (16 nav + closing + forms + 9 report tabs), full workflow through the forms, 6 PDF/Excel exports, FR/AR desktop + mobile, zero browser errors | `npm run test:live` | **5 / 5 passed** |
 | Schemas — client output re-validated on server | `npm run test:unit` | included below |
 | Browser — route protection (20 routes), export auth, security headers, FR/AR login (LTR/RTL), sign-in error, no overflow on mobile/tablet/desktop in both languages | `npm run test:e2e` | **8 / 8 passed** |
 | Type check | `npm run typecheck` | passed |
