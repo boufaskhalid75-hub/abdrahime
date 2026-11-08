@@ -8,6 +8,7 @@ PostgreSQL (Supabase). Migrations live in `supabase/migrations/` and must be app
 | `20261108000002_engine.sql` | Business engine (stock, purchases, orders, deliveries, invoices, payments, expenses, cash), protective & audit triggers |
 | `20261108000003_reports.sql` | Views and reporting functions |
 | `20261108000004_security.sql` | Grants, Row Level Security policies |
+| `20261108000005_hardening.sql` | Pinned `search_path` on internal helpers, foreign-key indexes (Supabase advisors) |
 
 Conventions: UUID primary keys (`gen_random_uuid()`), `owner_id → auth.users(id) ON DELETE RESTRICT` on every
 business table, `NUMERIC` for all money and quantities, no cascading deletes, `timestamptz` timestamps.

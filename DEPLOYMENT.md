@@ -1,6 +1,19 @@
 # Deployment — Volaille Manager
 
 Stack: Next.js 16 (App Router) on **Vercel**, **Supabase** (PostgreSQL + Auth).
+
+## Current production setup
+
+| Item | Value |
+|---|---|
+| Production URL | https://volaille-manager.vercel.app |
+| Vercel project | `volaille-manager` (team boufaskhalid75-hub's projects), linked to GitHub `boufaskhalid75-hub/abdrahime` |
+| Production branch | `claude/eager-feynman-mg44e0` — every push to it redeploys production automatically |
+| Runtime | Node 22.x, functions in `cdg1` (Paris), next to the database |
+| Supabase project | `volaille-manager`, ref `jsiqfowvnrazcdygtjxq`, region eu-west-3 (Paris) |
+| Env vars on Vercel | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (public by design, no secret key) |
+| Deployment protection | Vercel Authentication on preview / per-deployment URLs; the production domain is served publicly and protected by the app's own login + RLS |
+| Migrations applied | 0001 → 0005 |
 The application needs only the Supabase URL and the **publishable (anon) key**. No service-role key is used.
 
 ## 1. Create the Supabase project
@@ -12,7 +25,7 @@ The application needs only the Supabase URL and the **publishable (anon) key**. 
 3. **Authentication → Users → Add user**: create the owner (email + strong password, "Auto confirm").
 4. Apply the migrations (choose one):
    - Supabase CLI: `supabase link --project-ref <ref>` then `supabase db push`.
-   - Or SQL editor: run the four files of `supabase/migrations/` **in filename order**.
+   - Or SQL editor: run the files of `supabase/migrations/` **in filename order** (0001 → 0005).
    - Never run `supabase/tests/supabase_shim.sql` on a real project (test-only).
 5. **Project Settings → API**: copy the Project URL and the publishable key (`sb_publishable_…`, or the legacy anon key).
 6. Run **Advisors → Security** and check there is no "RLS disabled" warning.
