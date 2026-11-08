@@ -339,7 +339,7 @@ describe.skipIf(!dbAvailable())("database engine", () => {
   // ------------------------------------------------------------------ INVOICES & PAYMENTS
   describe("invoices & payments", () => {
     let p: string, c: string, other: string;
-    let inv: string[] = [];
+    const inv: string[] = [];
     beforeAll(async () => {
       p = await product(A, "P-pay", 20, 25);
       const s = await supplier(A);

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- generic row defaults for test helpers */
 /**
  * Database test harness.
  * Creates a fresh database on a plain PostgreSQL server, installs a minimal
