@@ -3,7 +3,7 @@ const sharp = require("sharp");
 const fs = require("fs");
 fs.mkdirSync("img", { recursive: true });
 
-const NAVY = "#0B1F3A", NAVY2 = "#13315C", BLUE = "#1F4E8C", SKY = "#A9C1E0",
+const NAVY = "#10243A", NAVY2 = "#1B3A5C", BLUE = "#1F4E8C", SKY = "#A9C1E0",
   OR = "#F28C28", OR2 = "#D9701A", GREY = "#F2F4F7", G2 = "#DDE3EB", G3 = "#A9B4C4", INK = "#1B2A40";
 
 function truck(tx, ty, s, o = {}) {
@@ -220,6 +220,7 @@ ${(()=>{const L=[[150,[220,360,500,640]],[330,[180,320,460,600,740]],[510,[260,4
 <rect x="960" y="270" width="140" height="40" rx="8" fill="${OR}"/><text x="1030" y="298" text-anchor="middle" font-family="Arial" font-weight="bold" font-size="22" fill="#fff">Prévision</text>
 `};
 
+svgs.truck = { w: 800, h: 300, svg: truck(10, 10, 1, {cab: NAVY2}).replace('<ellipse cx="380" cy="262" rx="400" ry="14" fill="#000" opacity=".25"/>','<ellipse cx="380" cy="262" rx="390" ry="12" fill="#000" opacity=".18"/>') };
 (async () => {
   for (const [k, { w, h, svg }] of Object.entries(svgs)) {
     const full = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${svg}</svg>`;
