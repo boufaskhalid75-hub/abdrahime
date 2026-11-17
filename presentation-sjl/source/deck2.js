@@ -77,9 +77,9 @@ async function photo(s, id, x, y, w, h, o = {}) {
 }
 
 // ---------- layouts ----------
-function frame(name, bg, dark) {
+function frame(name, bg, dark, img) {
   pres.defineSlideMaster({
-    title: name, background: { color: bg },
+    title: name, background: { path: `bg/${img}.png` },
     objects: [
       { placeholder: { options: { name: "kicker", type: "body", x: MX, y: 0.34, w: 9, h: 0.32, fontSize: 12, bold: true, color: C.accent1, charSpacing: 3, margin: 0, valign: "middle" }, text: "" } },
       { placeholder: { options: { name: "title", type: "title", x: MX, y: 0.68, w: CW, h: 0.82, fontSize: 34, bold: true, color: dark ? C.background1 : C.text1, margin: 0, valign: "middle", align: "left" }, text: "" } },
@@ -88,9 +88,9 @@ function frame(name, bg, dark) {
     slideNumber: { x: 12.23, y: 7.03, w: 0.5, h: 0.28, fontSize: 10, bold: true, color: C.accent1, align: "right", margin: 0 },
   });
 }
-frame("CONTENT_LIGHT", H.white, false);
-frame("CONTENT_GREY", H.grey, false);
-frame("CONTENT_DARK", H.navy, true);
+frame("CONTENT_LIGHT", H.white, false, "light");
+frame("CONTENT_GREY", H.grey, false, "grey");
+frame("CONTENT_DARK", H.navy, true, "dark");
 pres.defineSlideMaster({ title: "COVER", background: { color: H.navy }, objects: [] });
 
 // ---------- helpers ----------
@@ -114,12 +114,37 @@ function arrow(s, x1, y1, x2, y2, color, o = {}) {
 }
 const notes = (s, t) => s.addNotes(t);
 
+// ---------- Morph motif: two orbs + a ring that glide between corners on every slide ----------
+const OFF_R = [W + 0.6, -0.5, 5.0], OFF_L = [-5.6, 3.0, 5.0];
+const STATES = [
+  { A: [W - 2.0, -1.7, 3.6], B: [-1.9, 5.4, 3.8], R: OFF_R },
+  { A: [W - 1.9, 5.3, 3.4], B: [W - 1.2, -1.4, 2.6], R: OFF_R },
+  { A: [W - 1.3, 2.4, 2.8], B: [W - 3.5, 6.4, 3.2], R: OFF_L },
+  { A: [-1.6, 5.6, 3.4], B: [W - 2.2, -2.0, 3.8], R: OFF_L },
+  { A: [W - 1.5, -1.0, 2.4], B: [W - 2.2, 5.6, 3.4], R: OFF_R },
+  { A: [W - 5.0, 6.7, 3.0], B: [W - 1.6, -1.8, 3.4], R: OFF_R },
+];
+const HERO = { A: [10.6, 4.4, 3.4], B: [8.4, -2.6, 4.6], R: [7.9, -1.6, 7.2] };
+const HERO1 = { A: [10.9, 4.9, 3.0], B: [11.6, -2.1, 3.4], R: [7.9, -1.6, 7.2] };
+const PROB = { A: [W - 1.5, -1.0, 2.4], B: [-1.9, 5.4, 3.8], R: [6.4, -2.6, 5.2] };
+function motif(s, i, dark, st) {
+  st = st || STATES[(i - 1) % STATES.length];
+  const [ax, ay, ad] = st.A, [bx, by, bd] = st.B, [rx, ry, rd] = st.R;
+  s.addShape(pres.shapes.OVAL, { x: bx, y: by, w: bd, h: bd, fill: { color: dark ? "2F5683" : H.navy, transparency: dark ? 55 : 93 }, line: { color: H.navy, width: 0, transparency: 100 }, objectName: "!!orbB" });
+  s.addShape(pres.shapes.OVAL, { x: ax, y: ay, w: ad, h: ad, fill: { color: H.orange, transparency: dark ? 78 : 87 }, line: { color: H.orange, width: 0, transparency: 100 }, objectName: "!!orbA" });
+  s.addShape(pres.shapes.OVAL, { x: rx, y: ry, w: rd, h: rd, fill: { color: H.white, transparency: 100 }, line: { color: dark ? H.orange : "F7B87A", width: 1.5 }, objectName: "!!ring" });
+}
+const _addSlide = pres.addSlide.bind(pres);
+let slideNo = 0;
+pres.addSlide = (o) => { const s = _addSlide(o); slideNo++; if (o.masterName !== "COVER") motif(s, slideNo, o.masterName === "CONTENT_DARK", slideNo === 20 ? HERO : (slideNo === 3 ? PROB : undefined)); return s; };
+
 (async () => {
   let s;
   // ============ 1. COVER ============
   pres.addSection({ title: "Ouverture" });
   s = pres.addSlide({ masterName: "COVER", sectionTitle: "Ouverture" });
   await photo(s, "18446790", 0, 0, W, 7.5, { name: "!!truckPhoto", caption: false, pos: "right", grad: true, alt: "Camion semi-remorque blanc roulant sur une autoroute au coucher du soleil (photo d'illustration)" });
+  motif(s, 1, true, HERO1);
   s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.75, y: 0.8, w: 3.35, h: 0.4, rectRadius: 0.2, fill: { color: H.orange }, line: { color: H.orange, width: 0 }, objectName: "coverBadge" });
   T(s, "ÉTUDE DE CAS · SJL GROUP", { x: 0.75, y: 0.8, w: 3.35, h: 0.4, fontSize: 12, bold: true, color: C.background1, align: "center", valign: "middle", charSpacing: 2, objectName: "coverBadgeTxt" });
   T(s, "La digitalisation de la fonction logistique au sein de SJL Group", { x: 0.75, y: 1.45, w: 6.7, h: 2.55, fontSize: 40, bold: true, color: C.background1, fontFace: "Arial", valign: "bottom", objectName: "!!mainTitle" });
@@ -588,7 +613,7 @@ const notes = (s, t) => s.addNotes(t);
   await applyTheme(OUT, THEME);
   const P = (n) => Array.from({ length: n }, (_, i) => `anim${i + 1}_`);
   await addMotion(OUT, {
-    transitions: { 1: "fade", 2: "morph", 3: "morph", 4: "fade", 5: "morph", 6: "morph", 7: "fade", 8: "morph", 9: "morph", 10: "fade", 11: "morph", 12: "morph", 13: "morph", 14: "morph", 15: "morph", 16: "morph", 17: "fade", 18: "fade", 19: "morph", 20: "fade" },
+    transitions: Object.fromEntries(Array.from({ length: 20 }, (_, i) => [i + 1, "morph"])),
     anim: { 3: P(4), 4: P(4).slice(1), 5: P(4), 6: P(5), 8: P(4), 9: P(5), 10: P(5), 11: P(5), 12: P(3), 13: P(4), 14: P(4), 15: P(6), 16: P(4), 17: P(5), 18: P(2), 19: P(3) },
   });
   console.log("written", OUT);
